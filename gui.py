@@ -56,15 +56,14 @@ class Classify(Frame):
 
         Button(self.window, text="点击选择csv格式的评论文件", command=self.getfile).pack()
 
-        self.window.protocol("WM_DELETE_WINDOW", self.tuichu)
-
+        self.window.protocol("WM_DELETE_WINDOW", self.tuichu)   #重定义窗口关闭事件
         self.window.mainloop()
 
     def getfile(self):
         with askopenfile(title="评论文本",initialdir="d:",filetypes=[("csv文件",".csv")]) as f:
             print(1)
 
-    def tuichu(self):   #重定义窗口关闭事件
+    def tuichu(self):
         self.window.quit()
         self.window.destroy()
 
