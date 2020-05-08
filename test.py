@@ -1,13 +1,7 @@
-"""
-Example showing for tkinter and ttk:
-  -- How to use Tk and Toplevel to construct new windows.
-
-Authors: David Mutchler and his colleagues
-         at Rose-Hulman Institute of Technology.
-"""
-
 import tkinter
-from tkinter import ttk
+from tkinter  import *
+from tkinter  import ttk
+from tkinter.filedialog import *
 
 
 class WindowsAndNumber(object):
@@ -19,11 +13,23 @@ class WindowsAndNumber(object):
 
 def main():
     """ Constructs and runs the GUI """
-    root = tkinter.Tk()
-    windows_and_number = WindowsAndNumber()
+    root = Tk()
+    root.title("Comment Analysis")  # 设置窗口标题
+    root.geometry("400x247")  # 设置窗口大小 注意：是x 不是*
+    root.resizable(width=False, height=False)  # 设置窗口是否可以变化长/宽，False不可变，True可变，默认为True
 
-    gui(root, windows_and_number)
+    b1 = Button(root, text="获取数据")
+    b1.place(x=90, y=30, width=100, height=161, bordermode=INSIDE)
 
+
+    b2 = Button(root, text="分类处理")
+    b2.place(x=200, y=30, width=100, height=80, bordermode=INSIDE)
+
+    b3 = Button(root, text="聚类处理")
+    b3.place(x=200, y=110, width=100, height=80, bordermode=INSIDE)
+
+    # view = View(root)
+    # view.place(x = 180, y = 25)
     root.mainloop()
 
 

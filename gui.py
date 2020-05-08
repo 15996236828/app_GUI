@@ -1,5 +1,6 @@
 from tkinter  import *
 from tkinter.filedialog import *
+from tkinter import messagebox
 
 # class View(Frame):
 #     count = 0
@@ -36,26 +37,36 @@ class Getdata(Frame):
         window.geometry("400x247")  # 设置窗口大小 注意：是x 不是*
         window.resizable(width=False, height=False)  # 设置窗口是否可以变化长/宽，False不可变，True可变，默认为True
 
+
         # label = Label(window, text=id)
         # label.pack()
         window.mainloop()
 
-class Classify():
+
+class Classify(Frame):
     def __init__(self, *args, **kwargs):
         Frame.__init__(self, *args, **kwargs)
+        self.window = None
         self.new_window()
 
     def new_window(self):
-        window = Toplevel(self)
-        window.geometry("400x247")  # 设置窗口大小 注意：是x 不是*
-        window.resizable(width=False, height=False)  # 设置窗口是否可以变化长/宽，False不可变，True可变，默认为True
+        self.window = Toplevel(self)
+        self.window.geometry("400x247")  # 设置窗口大小 注意：是x 不是*
+        self.window.resizable(width=False, height=False)  # 设置窗口是否可以变化长/宽，False不可变，True可变，默认为True
 
-        Button(window, text="点击选择csv格式的评论文件", command=getfile).pack()
-        label = Label(window, text="请选择文件")
-        label.pack()
+        Button(self.window, text="点击选择csv格式的评论文件", command=self.getfile).pack()
 
-    def getfile(self, window):
-        a = askopenfilename()
+        self.window.protocol("WM_DELETE_WINDOW", self.tuichu)
+
+        self.window.mainloop()
+
+    def getfile(self):
+        with askopenfile(title="评论文本",initialdir="d:",filetypes=[("csv文件",".csv")]) as f:
+            print(1)
+
+    def tuichu(self):   #重定义窗口关闭事件
+        self.window.quit()
+        self.window.destroy()
 
 
 
@@ -73,8 +84,12 @@ if __name__ == "__main__":
     b1.place(x=90,y=30,width=100,height=161,bordermode=INSIDE)
 
     def cl():
+        root.withdraw()
+        # root.update()
         cla = Classify(root)
-        cla.pack()
+        print("jieshu ")
+        root.update()
+        root.deiconify()
     b2 = Button(root, text="分类处理", command=cl)
     b2.place(x=200, y=30, width=100, height=80, bordermode=INSIDE)
 
