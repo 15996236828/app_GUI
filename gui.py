@@ -1,6 +1,11 @@
 from tkinter  import *
 from tkinter.filedialog import *
+from tkinter import ttk  # 导入内部包
 from tkinter import messagebox
+import os
+import threading
+import time
+import re
 
 # class View(Frame):
 #     count = 0
@@ -43,25 +48,71 @@ class Getdata(Frame):
         window.mainloop()
 
 
-class Classify(Frame):
-    def __init__(self, *args, **kwargs):
-        Frame.__init__(self, *args, **kwargs)
+class Classify(object):
+    def __init__(self):
         self.window = None
+        self.tree = None
         self.new_window()
 
     def new_window(self):
-        self.window = Toplevel(self)
-        self.window.geometry("400x247")  # 设置窗口大小 注意：是x 不是*
+        self.window = Toplevel()
+        self.window.geometry("800x494")  # 设置窗口大小 注意：是x 不是*
         self.window.resizable(width=False, height=False)  # 设置窗口是否可以变化长/宽，False不可变，True可变，默认为True
 
-        Button(self.window, text="点击选择csv格式的评论文件", command=self.getfile).pack()
+        Button(self.window, text="点击选择数据文件夹",
+               command=self.getfile).place(x=15, y=10, width=160, height=30, bordermode=INSIDE)
+
+        self.tree = ttk.Treeview(self.window)  # 表格
+        scr = Scrollbar(self.window)
+
+        self.tree.config(yscrollcommand=scr.set)
+        scr.config(command=self.tree.yview)
+        self.tree["columns"] = ("评论", "类别")
+        self.tree.column("#0", minwidth=0, width=0, stretch=NO)
+        self.tree.column("评论", width=550)  # 表示列,不显示
+        self.tree.column("类别", width=50)
+        self.tree.heading("评论", text="评论")  # 显示表头
+        self.tree.heading("类别", text="类别")
+
+        self.tree.place(x=15, y=60, width=600, height=400, bordermode=INSIDE)
+        scr.place(x=615, y=60, width=15, height=400)
 
         self.window.protocol("WM_DELETE_WINDOW", self.tuichu)   #重定义窗口关闭事件
         self.window.mainloop()
 
     def getfile(self):
-        with askopenfile(title="评论文本",initialdir="d:",filetypes=[("csv文件",".csv")]) as f:
-            print(1)
+        a = askdirectory()
+        lable4=Label(self.window,text='runing......')
+        lable4.place(x=190, y=10, width=160, height=30, bordermode=INSIDE)
+        if a != "":
+            order = "python ./bert/run_classifier.py --task_name=mytask --do_predict=true --data_dir="  + a +\
+                    " --vocab_file=./bert/chinese_L-12_H-768_A-12/vocab.txt " \
+                    "--bert_config_file=./bert/chinese_L-12_H-768_A-12/bert_config.json " \
+                    "--init_checkpoint=./bert/mytask_output --max_seq_length=128 --output_dir=./bert/mrpc_output"
+            os.system(order)
+            order2 = "python get_result.py"
+            os.system(order2)
+
+        op = self.readdata()
+        while 1:
+            try:
+                line = next(op)
+            except StopIteration as e:
+                break
+            else:
+                line = line.split(",")
+                self.tree.insert('', 'end', values=[line[3], line[5]])
+        # lable4.place_forget()
+
+    def readdata(self):
+        """逐行读取文件"""
+        f = open(r"bert\glue\result.csv", 'r')
+        # f = open(r"D:\classify\app_reviews.csv", 'r')
+        line = f.readline()
+        while line:
+            yield line
+            line = f.readline()
+        f.close()
 
     def tuichu(self):
         self.window.quit()
@@ -85,7 +136,7 @@ if __name__ == "__main__":
     def cl():
         root.withdraw()
         # root.update()
-        cla = Classify(root)
+        cla = Classify()
         print("jieshu ")
         root.update()
         root.deiconify()
